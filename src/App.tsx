@@ -6,8 +6,9 @@ import WeatherCard from './components/custom_components/weatherCard'
 import type { WeatherData } from './type'
 
 function App() {
-  const [searchValue, setSearchValue] = useState<string>('')
+  const [searchValue, setSearchValue] = useState<string>("https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200")
   const [searchResult, setSearchResult] = useState<WeatherData & { forecast?: any[] }>()
+  const [cityImage, setCityImage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false)
 
   const handleSearchCity = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,31 +45,48 @@ function App() {
     return daily.slice(0, 5)
   }
 
+  const getCityImage = async (city: string) => {
+    // const unsplashKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+
+    const res = await fetch(
+      `https://api.unsplash.com/search/photos?query=${city}&client_id=dzymvYz7lv3zaaewlsQqAsx3afox-r_iVurwysFntcc&per_page=1`
+    );
+
+    const data = await res.json();
+    
+    // If no results, return fallback
+    setCityImage(data?.results?.[0]?.urls?.regular)
+  };
+
   const handleWeather = async () => {
     try {
-      setLoading(true)
+      setLoading(true);
 
-      const url = import.meta.env.VITE_WEATHER_APP_BASE_URL
-      const appId = import.meta.env.VITE_OPENWEATHERMAP_APIKEY
+      const url = import.meta.env.VITE_WEATHER_APP_BASE_URL;
+      const appId = import.meta.env.VITE_OPENWEATHERMAP_APIKEY;
 
-      // CURRENT WEATHER
-      const res = await fetch(
-        `${url}/weather?q=${searchValue}&appid=${appId}&units=metric`
-      )
-      const weather = await res.json()
+      // GET CURRENT WEATHER
+      const res = await fetch(`${url}/weather?q=${searchValue}&appid=${appId}&units=metric`);
+      const weather = await res.json();
 
-      // FORECAST
-      const forecastData = await getForecast(searchValue)
+      // GET FORECAST
+      const forecastData = await getForecast(searchValue);
 
-      // Merge into one object for UI
-      setSearchResult({ ...weather, forecast: forecastData })
+      // GET CITY IMAGE
+      const cityImage = await getCityImage(weather.name);
+
+      setSearchResult({
+        ...weather,
+        forecast: forecastData,
+        image: cityImage,
+      });
 
     } catch (e) {
-      console.error(e)
+      console.error(e);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="w-screen h-screen p-6 flex justify-center items-center">
@@ -91,7 +109,8 @@ function App() {
                 temperature={searchResult.main.temp}
                 description={searchResult.weather[0].description}
                 icon={searchResult.weather[0].icon}
-                forecast={searchResult.forecast} // now dynamic
+                forecast={searchResult.forecast}
+                image={cityImage} // now dynamic
               />
             ) : (
               <>please search place</>

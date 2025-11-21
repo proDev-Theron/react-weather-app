@@ -11,6 +11,7 @@ interface WeatherCardProps {
   description: string;
   icon: string;
   forecast?: ForecastItem[];
+  image?: string;
 }
 
 export default function WeatherCard({
@@ -20,6 +21,7 @@ export default function WeatherCard({
   description,
   icon,
   forecast = [],
+  image
 }: WeatherCardProps) {
   return (
     <div className="w-[340px] bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-200">
@@ -27,7 +29,7 @@ export default function WeatherCard({
       {/* Header Image */}
       <div className="h-32 w-full overflow-hidden">
         <img
-          src="https://img.freepik.com/free-vector/modern-skyline-building-background-design-with-reflection-effect_1017-50620.jpg?semt=ais_hybrid&w=740&q=80"
+          src={image}
           alt={city}
           className="object-cover w-full h-full"
         />

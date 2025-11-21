@@ -1,5 +1,7 @@
 interface ImportMetaEnv {
-  readonly VITE_UNSPLASH_ACCESSKEY: string
+  readonly VITE_OPENWEATHERMAP_APIKEY: string
   readonly VITE_WEATHER_APP_BASE_URL: string
-  // more env variables...
+  readonly VITE_UNSPLASH_ACCESSKEY: string
+
+
 }
