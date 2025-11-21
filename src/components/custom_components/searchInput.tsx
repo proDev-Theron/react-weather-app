@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 interface SearchInputProps {
     placeholder?: string,
     searchValue?: string,
-    onClick: () => void;
+    onClick: (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => void;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

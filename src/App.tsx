@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import './App.css'
 import Container from './components/custom_components/container'
 import { SearchInput } from './components/custom_components/searchInput'
@@ -6,9 +6,9 @@ import WeatherCard from './components/custom_components/weatherCard'
 import type { WeatherData } from './type'
 
 function App() {
-  const [searchValue, setSearchValue] = useState<string>("https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200")
+  const [searchValue, setSearchValue] = useState<string>("")
   const [searchResult, setSearchResult] = useState<WeatherData & { forecast?: any[] }>()
-  const [cityImage, setCityImage] = useState<string>('');
+  const [cityImage, setCityImage] = useState<string>('https://images.unsplash.com/photo-1503264116251-35a269479413?q=80&w=1200');
   const [loading, setLoading] = useState<boolean>(false)
 
   const handleSearchCity = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,16 +49,19 @@ function App() {
     // const unsplashKey = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 
     const res = await fetch(
-      `https://api.unsplash.com/search/photos?query=${city}&client_id=dzymvYz7lv3zaaewlsQqAsx3afox-r_iVurwysFntcc&per_page=1`
+      `https://api.unsplash.com/search/photos?query=${city}&client_id=dzymvYz7lv3zaaewlsQqAsx3afox-r_iVurwysFntcc&per_page=10`
     );
 
     const data = await res.json();
-    
+
+    const pickedImageIndex = randomInt(0, 9);
+    const pickedImage = data?.results?.[pickedImageIndex]?.urls?.regular;
     // If no results, return fallback
-    setCityImage(data?.results?.[0]?.urls?.regular)
+    setCityImage(pickedImage)
   };
 
-  const handleWeather = async () => {
+  const handleWeather = async (e: FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     try {
       setLoading(true);
 
@@ -91,12 +94,14 @@ function App() {
   return (
     <div className="w-screen h-screen p-6 flex justify-center items-center">
       <Container>
-        <SearchInput
-          searchValue={searchValue}
-          onClick={handleWeather}
-          onChange={handleSearchCity}
-          placeholder="Search"
-        />
+        <form onSubmit={handleWeather}>
+          <SearchInput
+            searchValue={searchValue}
+            onClick={handleWeather}
+            onChange={handleSearchCity}
+            placeholder="Search"
+          />
+        </form>
 
         {loading ? (
           <p className="mt-6 text-center">Getting weather data...</p>
@@ -120,6 +125,10 @@ function App() {
       </Container>
     </div>
   )
+}
+
+function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export default App
